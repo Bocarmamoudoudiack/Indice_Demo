@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Indices Démographiques{% endblock %}
+
+{% block extra_css %}
+<style>
+    .result-card {
+        transition: transform 0.2s;
+    }
+    .result-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Résultats des Indices Démographiques</h2>
+        </div>
+    </div>
+
+    <div id="resultsContainer" style="display: none;">
+        <!-- Indice de Whipple -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="text-primary"><i class="fas fa-chart-line"></i> Indice de Whipple</h4>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Hommes</h5>
+                        <h2 class="text-primary" id="whipple-homme">-</h2>
+                        <p class="quality-label" id="whipple-homme-quality"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Femmes</h5>
+                        <h2 class="text-info" id="whipple-femme">-</h2>
+                        <p class="quality-label" id="whipple-femme-quality"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ensemble</h5>
+                        <h2 class="text-success" id="whipple-ensemble">-</h2>
+                        <p class="quality-label" id="whipple-ensemble-quality"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indice de Myers -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="text-primary"><i class="fas fa-chart-area"></i> Indice de Myers</h4>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Hommes</h5>
+                        <h2 class="text-primary" id="myers-homme">-</h2>
+                        <p class="quality-label" id="myers-homme-quality"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Femmes</h5>
+                        <h2 class="text-info" id="myers-femme">-</h2>
+                        <p class="quality-label" id="myers-femme-quality"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ensemble</h5>
+                        <h2 class="text-success" id="myers-ensemble">-</h2>
+                        <p class="quality-label" id="myers-ensemble-quality"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Indice de Bachi -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="text-primary"><i class="fas fa-chart-pie"></i> Indice de Bachi</h4>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Hommes</h5>
+                        <h2 class="text-primary" id="bachi-homme">-</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Femmes</h5>
+                        <h2 class="text-info" id="bachi-femme">-</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Ensemble</h5>
+                        <h2 class="text-success" id="bachi-ensemble">-</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ICNU -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h4 class="text-primary"><i class="fas fa-globe"></i> Indice Combiné des Nations Unies (ICNU)</h4>
+            </div>
+            <div class="col-md-3">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Indice A</h5>
+                        <h3 class="text-primary" id="icnu-a">-</h3>
+                        <small>Hommes</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Indice B</h5>
+                        <h3 class="text-info" id="icnu-b">-</h3>
+                        <small>Femmes</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card result-card shadow">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Indice C</h5>
+                        <h3 class="text-warning" id="icnu-c">-</h3>
+                        <small>Masculinité</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card result-card shadow bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ICNU</h5>
+                        <h2 id="icnu-total">-</h2>
+                        <p class="quality-label" id="icnu-quality"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphique -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h4 class="card-title"><i class="fas fa-chart-bar"></i> Visualisation des données</h4>
+                        <canvas id="populationChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="noData" class="alert alert-warning text-center">
+        <i class="fas fa-exclamation-triangle"></i> Aucune donnée disponible. Veuillez d'abord importer un fichier depuis la <a href="{{ url_for('main.index') }}">page d'accueil</a>.
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

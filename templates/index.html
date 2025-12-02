@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - Indices Démographiques{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0"><i class="fas fa-file-excel"></i> Importer un fichier Excel</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-info-circle"></i> Format du fichier</h5>
+                        <p class="mb-0">Votre fichier Excel doit contenir les colonnes suivantes :</p>
+                        <ul class="mb-2">
+                            <li><strong>Age</strong> : Âge de la population</li>
+                            <li><strong>Homme</strong> : Effectif masculin</li>
+                            <li><strong>Femme</strong> : Effectif féminin</li>
+                        </ul>
+                        <p class="mb-0"><em>Note : La colonne "Ensemble" sera calculée automatiquement (Homme + Femme)</em></p>
+                    </div>
+
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="fileInput" class="form-label">Sélectionner un fichier Excel</label>
+                            <input type="file" class="form-control" id="fileInput" accept=".xlsx,.xls" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-upload"></i> Calculer les indices
+                        </button>
+                    </form>
+
+                    <div id="loadingSpinner" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2">Calcul en cours...</p>
+                    </div>
+
+                    <div id="errorMessage" class="alert alert-danger mt-4" style="display: none;"></div>
+                </div>
+            </div>
+
+            <div class="card shadow-lg mt-4">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0"><i class="fas fa-calculator"></i> Indices calculés</h4>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="indicesAccordion">
+                        <!-- Indice de Whipple -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#whipple">
+                                    Indice de Whipple
+                                </button>
+                            </h2>
+                            <div id="whipple" class="accordion-collapse collapse" data-bs-parent="#indicesAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>Formule :</strong> Iw = (Somme des âges terminés par 0 ou 5) × 5 / (Somme totale 23-62 ans)</p>
+                                    <p><strong>Interprétation :</strong></p>
+                                    <ul>
+                                        <li>Iw ≈ 1 : Données de bonne qualité</li>
+                                        <li>1 < Iw < 1.25 : Qualité acceptable</li>
+                                        <li>Iw ≥ 1.25 : Attraction importante vers 0 et 5</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indice de Myers -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#myers">
+                                    Indice de Myers
+                                </button>
+                            </h2>
+                            <div id="myers" class="accordion-collapse collapse" data-bs-parent="#indicesAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>Formule :</strong> ½ Σ|(ΣPi,d)/(ΣPi) × 100 - 10|</p>
+                                    <p><strong>Interprétation :</strong></p>
+                                    <ul>
+                                        <li>0-5 : Données de très bonne qualité</li>
+                                        <li>5-10 : Qualité acceptable</li>
+                                        <li>10-20 : Qualité médiocre</li>
+                                        <li>> 20 : Qualité très mauvaise</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indice de Bachi -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#bachi">
+                                    Indice de Bachi
+                                </button>
+                            </h2>
+                            <div id="bachi" class="accordion-collapse collapse" data-bs-parent="#indicesAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>Formule :</strong> (O - T) / T × 100</p>
+                                    <p>Où T = (13/61) × Population totale (10-70 ans)</p>
+                                    <p><strong>Interprétation :</strong></p>
+                                    <ul>
+                                        <li>Proche de 0 : Pas d'attraction particulière</li>
+                                        <li>> 0 : Sur-déclaration des âges en 0 et 5</li>
+                                        <li>< 0 : Sous-déclaration des âges en 0 et 5</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ICNU -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#icnu">
+                                    Indice Combiné des Nations Unies (ICNU)
+                                </button>
+                            </h2>
+                            <div id="icnu" class="accordion-collapse collapse" data-bs-parent="#indicesAccordion">
+                                <div class="accordion-body">
+                                    <p><strong>Formule :</strong> ICNU = A + B + 3C</p>
+                                    <p>Où A = Rapport d'âges (Hommes), B = Rapport d'âges (Femmes), C = Rapport de masculinité</p>
+                                    <p><strong>Interprétation :</strong></p>
+                                    <ul>
+                                        <li>< 20 : Données de bonne qualité</li>
+                                        <li>20-40 : Qualité acceptable</li>
+                                        <li>> 40 : Qualité médiocre</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
